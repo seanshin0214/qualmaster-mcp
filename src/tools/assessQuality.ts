@@ -37,6 +37,25 @@ interface CriterionAssessment {
   recommendations: string[];
 }
 
+// 키워드 정규화 함수 - 띄어쓰기, 언더스코어 등을 무시하고 비교
+function normalizeText(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[\s_\-]/g, "")  // 공백, 언더스코어, 하이픈 제거
+    .replace(/확인/g, "확인")
+    .replace(/검증/g, "검토");  // 검증과 검토를 동일하게 처리
+}
+
+// 확장된 키워드 매칭 - 다양한 변형 포함
+function matchesKeyword(text: string, keywords: string[]): boolean {
+  const normalizedText = normalizeText(text);
+  return keywords.some(keyword => {
+    const normalizedKeyword = normalizeText(keyword);
+    return normalizedText.includes(normalizedKeyword) ||
+           normalizedKeyword.includes(normalizedText);
+  });
+}
+
 export async function assessQuality(args: Record<string, unknown>) {
   const { research_description, strategies_used, criteria } = inputSchema.parse(args);
 
@@ -96,45 +115,102 @@ function assessLincolnGuba(
   strategies: string[]
 ): CriterionAssessment[] {
   const lowerDesc = description.toLowerCase();
-  const lowerStrategies = strategies.map((s) => s.toLowerCase());
+  const normalizedDesc = normalizeText(description);
+  const normalizedStrategies = strategies.map(s => normalizeText(s));
 
   const criteria = [
     {
       criterion: "credibility",
       korean: "신빙성 (Credibility)",
       strategies: [
-        { name: "prolonged_engagement", korean: "장기적 관여", keywords: ["장기", "오랜 기간", "prolonged"] },
-        { name: "triangulation", korean: "삼각화", keywords: ["삼각화", "triangulation", "다중"] },
-        { name: "peer_debriefing", korean: "동료 검토", keywords: ["동료", "peer", "검토"] },
-        { name: "member_checking", korean: "참여자 확인", keywords: ["참여자 확인", "member check"] },
-        { name: "negative_case", korean: "부정적 사례 분석", keywords: ["부정적 사례", "negative case", "반증"] },
+        {
+          name: "prolonged_engagement",
+          korean: "장기적 관여",
+          keywords: ["장기", "오랜기간", "prolonged", "7일", "14일", "집중적관여", "지속적"]
+        },
+        {
+          name: "triangulation",
+          korean: "삼각화/삼각검증",
+          keywords: ["삼각화", "삼각검증", "triangulation", "다중자료", "3중", "인터뷰+저널", "다중출처"]
+        },
+        {
+          name: "peer_debriefing",
+          korean: "동료 검토",
+          keywords: ["동료검토", "동료검증", "peer", "debriefing", "동료연구자"]
+        },
+        {
+          name: "member_checking",
+          korean: "참여자 확인",
+          keywords: ["참여자확인", "membercheck", "memberchecking", "참여자검토", "2단계확인"]
+        },
+        {
+          name: "negative_case",
+          korean: "부정적 사례 분석",
+          keywords: ["부정적사례", "negativecase", "반증", "방해경험", "부정사례"]
+        },
       ],
     },
     {
       criterion: "transferability",
       korean: "전이가능성 (Transferability)",
       strategies: [
-        { name: "thick_description", korean: "두꺼운 기술", keywords: ["두꺼운 기술", "thick description", "상세 기술"] },
-        { name: "purposeful_sampling", korean: "목적적 표본추출", keywords: ["목적적", "purposeful", "의도적 표집"] },
-        { name: "context_description", korean: "맥락 기술", keywords: ["맥락", "context", "배경"] },
+        {
+          name: "thick_description",
+          korean: "두꺼운 기술",
+          keywords: ["두꺼운기술", "thickdescription", "상세기술", "풍부한기술"]
+        },
+        {
+          name: "purposeful_sampling",
+          korean: "목적적 표본추출",
+          keywords: ["목적적", "purposeful", "의도적표집", "목적표집", "목적적표본", "목적표본"]
+        },
+        {
+          name: "context_description",
+          korean: "맥락 기술",
+          keywords: ["맥락", "context", "배경", "상황기술", "맥락상세", "맥락체크리스트"]
+        },
       ],
     },
     {
       criterion: "dependability",
       korean: "의존가능성 (Dependability)",
       strategies: [
-        { name: "audit_trail", korean: "감사 추적", keywords: ["감사 추적", "audit trail", "연구 일지"] },
-        { name: "code_recode", korean: "코드-재코드", keywords: ["재코드", "recode", "반복 코딩"] },
-        { name: "peer_examination", korean: "동료 검증", keywords: ["동료 검증", "peer examination"] },
+        {
+          name: "audit_trail",
+          korean: "감사 추적",
+          keywords: ["감사추적", "audittrail", "연구일지", "감사로그", "추적로그"]
+        },
+        {
+          name: "code_recode",
+          korean: "코드-재코드",
+          keywords: ["재코드", "recode", "반복코딩", "코드재코드", "일치율", "코딩일치"]
+        },
+        {
+          name: "peer_examination",
+          korean: "동료 검증",
+          keywords: ["동료검증", "동료검토", "peerexamination", "동료심사"]
+        },
       ],
     },
     {
       criterion: "confirmability",
       korean: "확인가능성 (Confirmability)",
       strategies: [
-        { name: "reflexivity", korean: "반성성", keywords: ["반성", "reflexiv", "성찰"] },
-        { name: "audit_trail", korean: "감사 추적", keywords: ["감사 추적", "audit trail"] },
-        { name: "triangulation", korean: "삼각화", keywords: ["삼각화", "triangulation"] },
+        {
+          name: "reflexivity",
+          korean: "반성성/성찰",
+          keywords: ["반성", "reflexiv", "성찰", "반성적저널", "위치성", "저널링"]
+        },
+        {
+          name: "audit_trail",
+          korean: "감사 추적",
+          keywords: ["감사추적", "audittrail", "감사로그"]
+        },
+        {
+          name: "triangulation",
+          korean: "삼각화/삼각검증",
+          keywords: ["삼각화", "삼각검증", "triangulation", "3중"]
+        },
       ],
     },
   ];
@@ -144,11 +220,20 @@ function assessLincolnGuba(
     const missing: string[] = [];
 
     for (const strategy of c.strategies) {
-      const found =
-        strategy.keywords.some((k) => lowerDesc.includes(k)) ||
-        lowerStrategies.some((s) => strategy.keywords.some((k) => s.includes(k)));
+      // 1. description에서 키워드 찾기
+      const foundInDesc = strategy.keywords.some(k =>
+        normalizedDesc.includes(normalizeText(k)) || lowerDesc.includes(k.toLowerCase())
+      );
 
-      if (found) {
+      // 2. strategies_used 배열에서 찾기
+      const foundInStrategies = normalizedStrategies.some(s =>
+        strategy.keywords.some(k => {
+          const nk = normalizeText(k);
+          return s.includes(nk) || nk.includes(s);
+        })
+      );
+
+      if (foundInDesc || foundInStrategies) {
         applied.push(strategy.korean);
       } else {
         missing.push(strategy.korean);
@@ -164,7 +249,9 @@ function assessLincolnGuba(
       max_score: 25,
       strategies_applied: applied,
       missing_strategies: missing,
-      recommendations: missing.map((m) => `${m} 전략을 추가로 적용하세요`),
+      recommendations: missing.length > 0
+        ? missing.map((m) => `${m} 전략을 추가로 적용하세요`)
+        : [],
     };
   });
 }
@@ -174,63 +261,106 @@ function assessTracy(
   strategies: string[]
 ): CriterionAssessment[] {
   const lowerDesc = description.toLowerCase();
+  const normalizedDesc = normalizeText(description);
+  const normalizedStrategies = strategies.map(s => normalizeText(s));
 
+  // Tracy의 8가지 기준 - 키워드 대폭 확장
   const criteria = [
     {
       criterion: "worthy_topic",
       korean: "가치있는 주제",
-      indicators: ["중요", "시의적절", "필요", "기여", "문제"],
+      indicators: [
+        "중요", "시의적절", "필요", "기여", "문제", "의미", "가치",
+        "새로운현상", "AI", "리더", "의사결정", "탐구", "연구목적"
+      ],
     },
     {
       criterion: "rich_rigor",
       korean: "풍부한 엄격성",
-      indicators: ["충분한", "다양한", "적절한", "체계적", "면밀한"],
+      indicators: [
+        "충분한", "다양한", "적절한", "체계적", "면밀한", "엄격",
+        "IPA", "6단계", "다중사례", "심층", "분석절차", "브라케팅"
+      ],
     },
     {
       criterion: "sincerity",
       korean: "성실성",
-      indicators: ["반성", "성찰", "한계", "투명", "정직"],
+      indicators: [
+        "반성", "성찰", "한계", "투명", "정직", "위치성",
+        "반성적저널", "저널링", "솔직"
+      ],
     },
     {
       criterion: "credibility",
       korean: "신빙성",
-      indicators: ["삼각화", "참여자 확인", "두꺼운 기술", "구체적"],
+      indicators: [
+        "삼각", "참여자확인", "두꺼운기술", "구체적", "검증",
+        "membercheck", "삼각검증", "동료검토"
+      ],
     },
     {
       criterion: "resonance",
       korean: "공명",
-      indicators: ["전이", "일반화", "독자", "영향", "감동"],
+      indicators: [
+        "전이", "일반화", "독자", "영향", "감동", "공감",
+        "경험", "의미", "본질", "통찰"
+      ],
     },
     {
       criterion: "significant_contribution",
       korean: "의미있는 기여",
-      indicators: ["기여", "확장", "새로운", "발전", "함의"],
+      indicators: [
+        "기여", "확장", "새로운", "발전", "함의", "이론적",
+        "실무적", "통찰", "제안"
+      ],
     },
     {
       criterion: "ethics",
       korean: "윤리성",
-      indicators: ["윤리", "동의", "익명", "보호", "IRB"],
+      indicators: [
+        "윤리", "동의", "익명", "보호", "IRB", "승인",
+        "동의서", "철회", "민감정보", "익명화"
+      ],
     },
     {
       criterion: "meaningful_coherence",
       korean: "의미있는 일관성",
-      indicators: ["일관", "연결", "목적", "방법론", "통합"],
+      indicators: [
+        "일관", "연결", "목적", "방법론", "통합", "적합",
+        "IPA", "현상학", "연구질문", "분석"
+      ],
     },
   ];
 
   return criteria.map((c) => {
-    const matchCount = c.indicators.filter((i) => lowerDesc.includes(i)).length;
-    const score = Math.round((matchCount / c.indicators.length) * 12.5);
+    // description과 strategies 모두에서 indicator 찾기
+    const foundIndicators = c.indicators.filter(indicator => {
+      const normalizedIndicator = normalizeText(indicator);
+      return normalizedDesc.includes(normalizedIndicator) ||
+             lowerDesc.includes(indicator.toLowerCase()) ||
+             normalizedStrategies.some(s => s.includes(normalizedIndicator));
+    });
+
+    const missingIndicators = c.indicators.filter(indicator => {
+      const normalizedIndicator = normalizeText(indicator);
+      return !normalizedDesc.includes(normalizedIndicator) &&
+             !lowerDesc.includes(indicator.toLowerCase()) &&
+             !normalizedStrategies.some(s => s.includes(normalizedIndicator));
+    });
+
+    // 점수 계산 - 최소 1개만 매치되어도 부분 점수 부여
+    const matchRatio = foundIndicators.length / c.indicators.length;
+    const score = Math.round(matchRatio * 13);
 
     return {
       criterion: c.criterion,
       korean: c.korean,
       score,
-      max_score: 12.5,
-      strategies_applied: c.indicators.filter((i) => lowerDesc.includes(i)),
-      missing_strategies: c.indicators.filter((i) => !lowerDesc.includes(i)),
+      max_score: 13,
+      strategies_applied: foundIndicators,
+      missing_strategies: missingIndicators.slice(0, 3), // 상위 3개만 표시
       recommendations:
-        score < 10
+        score < 10 && foundIndicators.length < 3
           ? [`${c.korean} 관련 내용을 보강하세요`]
           : [],
     };

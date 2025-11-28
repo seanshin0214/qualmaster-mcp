@@ -1,6 +1,14 @@
-import { getCollection } from "./client.js";
+import { getCollection, isVectorSearchAvailable } from "./client.js";
 import { COLLECTIONS } from "./collections.js";
 export async function searchKnowledgeBase(query, category = "all", nResults = 5) {
+    // If ChromaDB is not available, return empty results with a note
+    if (!isVectorSearchAvailable()) {
+        return [{
+                content: "Vector search is currently unavailable. The tool is operating without RAG support. To enable, start ChromaDB server: chroma run --path ./chroma-data",
+                metadata: { source: "system", type: "notice" },
+                distance: 0
+            }];
+    }
     const collectionsToSearch = category === "all"
         ? Object.values(COLLECTIONS).map((c) => c.name)
         : [COLLECTIONS[category]?.name].filter(Boolean);
@@ -8,6 +16,8 @@ export async function searchKnowledgeBase(query, category = "all", nResults = 5)
     for (const collectionName of collectionsToSearch) {
         try {
             const collection = await getCollection(collectionName);
+            if (!collection)
+                continue;
             const queryResult = await collection.query({
                 queryTexts: [query],
                 nResults: nResults,
@@ -21,7 +31,7 @@ export async function searchKnowledgeBase(query, category = "all", nResults = 5)
             }
         }
         catch (error) {
-            console.error(`Error searching collection ${collectionName}:`, error);
+            // Silently skip failed collections
         }
     }
     // Sort by relevance (lower distance = more relevant)
@@ -29,7 +39,11 @@ export async function searchKnowledgeBase(query, category = "all", nResults = 5)
     return results.slice(0, nResults);
 }
 export async function addDocument(collectionName, id, content, metadata) {
+    if (!isVectorSearchAvailable())
+        return;
     const collection = await getCollection(collectionName);
+    if (!collection)
+        return;
     await collection.add({
         ids: [id],
         documents: [content],
@@ -37,7 +51,11 @@ export async function addDocument(collectionName, id, content, metadata) {
     });
 }
 export async function addDocuments(collectionName, ids, contents, metadatas) {
+    if (!isVectorSearchAvailable())
+        return;
     const collection = await getCollection(collectionName);
+    if (!collection)
+        return;
     await collection.add({
         ids,
         documents: contents,
