@@ -61,8 +61,8 @@ Dr. QualMaster는 질적연구자와 개념논문 작성자를 위한 전문 MCP
 
 ```bash
 # Clone the repository
-git clone https://github.com/seanshin0214/qualai-mcp.git
-cd qualai-mcp
+git clone https://github.com/seanshin0214/qualmaster-mcp.git
+cd qualmaster-mcp
 
 # Install dependencies
 npm install
