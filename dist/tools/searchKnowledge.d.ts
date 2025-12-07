@@ -18,10 +18,30 @@ export declare const searchKnowledgeSchema: {
     readonly required: readonly ["query"];
 };
 export declare function searchKnowledge(args: Record<string, unknown>): Promise<{
+    error: boolean;
+    message: string;
+    required_parameters: {
+        query: string;
+    };
+    example: {
+        query: string;
+        category: string;
+    };
+    hint: string;
+    query?: undefined;
+    category?: undefined;
+    suggestions?: undefined;
+    total_results?: undefined;
+    results?: undefined;
+} | {
     message: string;
     query: string;
     category: "all" | "paradigm" | "tradition" | "method" | "quality" | "concept" | "journal";
     suggestions: string[];
+    error?: undefined;
+    required_parameters?: undefined;
+    example?: undefined;
+    hint?: undefined;
     total_results?: undefined;
     results?: undefined;
 } | {
@@ -34,7 +54,11 @@ export declare function searchKnowledge(args: Record<string, unknown>): Promise<
         source: string | number | true;
         relevance_score: string;
     }[];
+    error?: undefined;
     message?: undefined;
+    required_parameters?: undefined;
+    example?: undefined;
+    hint?: undefined;
     suggestions?: undefined;
 }>;
 //# sourceMappingURL=searchKnowledge.d.ts.map

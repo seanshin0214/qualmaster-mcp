@@ -21,6 +21,23 @@ export declare const detectSaturationSchema: {
     readonly required: readonly ["codes"];
 };
 export declare function detectSaturation(args: Record<string, unknown>): Promise<{
+    error: boolean;
+    message: string;
+    required_parameters: {
+        codes: string;
+    };
+    example: {
+        codes: string[];
+        level: string;
+    };
+    level?: undefined;
+    metrics?: undefined;
+    assessment?: undefined;
+    cumulative_analysis?: undefined;
+    recommendations?: undefined;
+    saturation_guidelines?: undefined;
+    next_steps?: undefined;
+} | {
     level: "code" | "theme" | "theoretical";
     metrics: {
         total_codes: number;
@@ -42,5 +59,9 @@ export declare function detectSaturation(args: Record<string, unknown>): Promise
     recommendations: string[];
     saturation_guidelines: Record<string, string>;
     next_steps: string[];
+    error?: undefined;
+    message?: undefined;
+    required_parameters?: undefined;
+    example?: undefined;
 }>;
 //# sourceMappingURL=detectSaturation.d.ts.map

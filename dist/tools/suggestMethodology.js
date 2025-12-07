@@ -30,6 +30,15 @@ const inputSchema = z.object({
     data_type: z.string().optional(),
 });
 export async function suggestMethodology(args) {
+    // Defensive coding
+    if (!args || typeof args !== 'object' || !args.research_question || typeof args.research_question !== 'string' || args.research_question.trim() === '') {
+        return {
+            error: true,
+            message: "suggest_methodology 도구에 필수 인자 'research_question'이 전달되지 않았습니다.",
+            required_parameters: { research_question: "(필수) 연구 질문" },
+            example: { research_question: "AI 시대 리더들은 AI 조언을 어떻게 경험하는가?", purpose: "explore" }
+        };
+    }
     const { research_question, purpose, participants, data_type } = inputSchema.parse(args);
     // Analyze research question keywords
     const questionAnalysis = analyzeResearchQuestion(research_question);

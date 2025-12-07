@@ -38,6 +38,16 @@ interface SectionScore {
 }
 
 export async function reviewPaper(args: Record<string, unknown>) {
+  // Defensive coding
+  if (!args || typeof args !== 'object' || !args.paper_text || typeof args.paper_text !== 'string' || args.paper_text.trim() === '') {
+    return {
+      error: true,
+      message: "review_paper 도구에 필수 인자 'paper_text'가 전달되지 않았습니다.",
+      required_parameters: { paper_text: "(필수) 논문 텍스트" },
+      example: { paper_text: "논문 내용...", section: "full" }
+    };
+  }
+
   const { paper_text, section } = inputSchema.parse(args);
 
   // Analyze paper by section

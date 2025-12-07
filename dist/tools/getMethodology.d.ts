@@ -14,6 +14,25 @@ export declare const getMethodologySchema: {
     readonly required: readonly ["methodology"];
 };
 export declare function getMethodology(args: Record<string, unknown>): Promise<{
+    error: boolean;
+    message: string;
+    required_parameters: {
+        methodology: string;
+    };
+    example: {
+        methodology: string;
+        variant: string;
+    };
+    methodology?: undefined;
+    korean_name?: undefined;
+    description?: undefined;
+    variants?: undefined;
+    key_features?: undefined;
+    best_for?: undefined;
+    requested_variant?: undefined;
+    additional_resources?: undefined;
+    recommendations?: undefined;
+} | {
     methodology: "phenomenology" | "grounded_theory" | "ethnography" | "narrative" | "case_study";
     korean_name: string;
     description: string;
@@ -30,5 +49,9 @@ export declare function getMethodology(args: Record<string, unknown>): Promise<{
         data_collection: string[];
         analysis_approach: string;
     };
+    error?: undefined;
+    message?: undefined;
+    required_parameters?: undefined;
+    example?: undefined;
 }>;
 //# sourceMappingURL=getMethodology.d.ts.map

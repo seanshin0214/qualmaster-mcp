@@ -115,6 +115,15 @@ const METHODOLOGY_INFO = {
     },
 };
 export async function getMethodology(args) {
+    // Defensive coding
+    if (!args || typeof args !== 'object' || !args.methodology) {
+        return {
+            error: true,
+            message: "get_methodology 도구에 필수 인자 'methodology'가 전달되지 않았습니다.",
+            required_parameters: { methodology: "(필수) 방법론 ID: phenomenology, grounded_theory, ethnography, narrative, case_study" },
+            example: { methodology: "phenomenology", variant: "IPA" }
+        };
+    }
     const { methodology, variant } = inputSchema.parse(args);
     const info = METHODOLOGY_INFO[methodology];
     // Search for additional details from knowledge base

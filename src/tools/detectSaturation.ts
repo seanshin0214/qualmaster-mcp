@@ -44,6 +44,16 @@ interface SaturationAssessment {
 }
 
 export async function detectSaturation(args: Record<string, unknown>) {
+  // Defensive coding
+  if (!args || typeof args !== 'object' || !args.codes || !Array.isArray(args.codes) || args.codes.length === 0) {
+    return {
+      error: true,
+      message: "detect_saturation 도구에 필수 인자 'codes'가 전달되지 않았습니다.",
+      required_parameters: { codes: "(필수) 전체 코드 목록" },
+      example: { codes: ["코드1", "코드2"], level: "code" }
+    };
+  }
+
   const { codes, new_codes_by_source, level } = inputSchema.parse(args);
 
   // Calculate saturation metrics

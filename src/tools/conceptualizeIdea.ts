@@ -37,6 +37,25 @@ interface ConceptDevelopment {
 }
 
 export async function conceptualizeIdea(args: Record<string, unknown>) {
+  // Defensive coding: 인자가 없거나 idea가 없는 경우 친절한 에러 반환
+  if (!args || typeof args !== 'object' || !args.idea || typeof args.idea !== 'string' || args.idea.trim() === '') {
+    return {
+      error: true,
+      message: "conceptualize_idea 도구에 필수 인자 'idea'가 전달되지 않았습니다.",
+      required_parameters: {
+        idea: "(필수) 초기 아이디어 - 학술적 개념으로 발전시키고 싶은 아이디어",
+        phenomenon: "(선택) 관련 현상",
+        existing_concepts: "(선택) 관련 기존 개념 배열"
+      },
+      example_usage: {
+        idea: "AI와 협업하는 리더는 의사결정에서 새로운 형태의 인지적 갈등을 경험한다",
+        phenomenon: "AI 시대 리더십",
+        existing_concepts: ["인지부조화", "의사결정 자기효능감", "기술수용"]
+      },
+      hint: "학술적 개념으로 발전시키고 싶은 아이디어를 idea 파라미터에 전달해주세요."
+    };
+  }
+
   const { idea, phenomenon, existing_concepts } = inputSchema.parse(args);
 
   // Analyze the idea

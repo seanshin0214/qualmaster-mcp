@@ -26,6 +26,24 @@ interface CodeSuggestion {
     rationale: string;
 }
 export declare function autoCoding(args: Record<string, unknown>): Promise<{
+    error: boolean;
+    message: string;
+    required_parameters: {
+        text: string;
+    };
+    example: {
+        text: string;
+        methodology: string;
+    };
+    methodology?: undefined;
+    text_length?: undefined;
+    segments_analyzed?: undefined;
+    existing_codes_count?: undefined;
+    suggested_codes?: undefined;
+    codes?: undefined;
+    coding_guidelines?: undefined;
+    next_steps?: undefined;
+} | {
     methodology: string;
     text_length: number;
     segments_analyzed: number;
@@ -42,6 +60,10 @@ export declare function autoCoding(args: Record<string, unknown>): Promise<{
     codes: CodeSuggestion[];
     coding_guidelines: Record<string, string[]>;
     next_steps: string[];
+    error?: undefined;
+    message?: undefined;
+    required_parameters?: undefined;
+    example?: undefined;
 }>;
 export {};
 //# sourceMappingURL=autoCoding.d.ts.map

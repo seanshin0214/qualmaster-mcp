@@ -113,8 +113,11 @@ export function registerTools(server: Server): void {
       throw new Error(`Unknown tool: ${name}`);
     }
 
+    // Defensive coding: 인자가 없거나 undefined인 경우 빈 객체로 처리
+    const safeArgs = (args && typeof args === 'object') ? args : {};
+
     try {
-      const result = await tool.handler(args as Record<string, unknown>);
+      const result = await tool.handler(safeArgs as Record<string, unknown>);
       return {
         content: [
           {

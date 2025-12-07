@@ -37,6 +37,16 @@ interface Proposition {
 }
 
 export async function developProposition(args: Record<string, unknown>) {
+  // Defensive coding
+  if (!args || typeof args !== 'object' || !args.concept || typeof args.concept !== 'string' || args.concept.trim() === '') {
+    return {
+      error: true,
+      message: "develop_proposition 도구에 필수 인자 'concept'이 전달되지 않았습니다.",
+      required_parameters: { concept: "(필수) 핵심 개념" },
+      example: { concept: "AI 의존성", relationships: ["의사결정 자신감", "리더 정체성"] }
+    };
+  }
+
   const { concept, relationships, mechanism } = inputSchema.parse(args);
 
   // Generate propositions

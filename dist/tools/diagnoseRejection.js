@@ -195,6 +195,15 @@ const REJECTION_PATTERNS = [
     },
 ];
 export async function diagnoseRejection(args) {
+    // Defensive coding
+    if (!args || typeof args !== 'object' || !args.reviewer_comments || typeof args.reviewer_comments !== 'string' || args.reviewer_comments.trim() === '') {
+        return {
+            error: true,
+            message: "diagnose_rejection 도구에 필수 인자 'reviewer_comments'가 전달되지 않았습니다.",
+            required_parameters: { reviewer_comments: "(필수) 리뷰어 코멘트" },
+            example: { reviewer_comments: "리뷰어 피드백 내용..." }
+        };
+    }
     const { reviewer_comments, editor_decision } = inputSchema.parse(args);
     const combinedText = `${reviewer_comments} ${editor_decision || ""}`.toLowerCase();
     // Calculate confidence for each pattern

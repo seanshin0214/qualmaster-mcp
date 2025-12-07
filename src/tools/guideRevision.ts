@@ -34,6 +34,16 @@ interface RevisionStrategy {
 }
 
 export async function guideRevision(args: Record<string, unknown>) {
+  // Defensive coding
+  if (!args || typeof args !== 'object' || !args.reviewer_comment || typeof args.reviewer_comment !== 'string' || args.reviewer_comment.trim() === '') {
+    return {
+      error: true,
+      message: "guide_revision 도구에 필수 인자 'reviewer_comment'가 전달되지 않았습니다.",
+      required_parameters: { reviewer_comment: "(필수) 대응할 리뷰어 코멘트" },
+      example: { reviewer_comment: "리뷰어 코멘트...", rejection_pattern: "so_what" }
+    };
+  }
+
   const { rejection_pattern, original_content, reviewer_comment } = inputSchema.parse(args);
 
   // Analyze the reviewer comment

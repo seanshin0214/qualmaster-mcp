@@ -20,6 +20,30 @@ export declare const conceptualizeIdeaSchema: {
     readonly required: readonly ["idea"];
 };
 export declare function conceptualizeIdea(args: Record<string, unknown>): Promise<{
+    error: boolean;
+    message: string;
+    required_parameters: {
+        idea: string;
+        phenomenon: string;
+        existing_concepts: string;
+    };
+    example_usage: {
+        idea: string;
+        phenomenon: string;
+        existing_concepts: string[];
+    };
+    hint: string;
+    original_idea?: undefined;
+    phenomenon?: undefined;
+    existing_concepts_considered?: undefined;
+    idea_analysis?: undefined;
+    concept_development?: undefined;
+    differentiation_from_existing?: undefined;
+    theoretical_positioning?: undefined;
+    related_literature?: undefined;
+    next_steps?: undefined;
+    concept_paper_structure?: undefined;
+} | {
     original_idea: string;
     phenomenon: string;
     existing_concepts_considered: string[];
@@ -51,5 +75,10 @@ export declare function conceptualizeIdea(args: Record<string, unknown>): Promis
     }[];
     next_steps: string[];
     concept_paper_structure: Record<string, string[]>;
+    error?: undefined;
+    message?: undefined;
+    required_parameters?: undefined;
+    example_usage?: undefined;
+    hint?: undefined;
 }>;
 //# sourceMappingURL=conceptualizeIdea.d.ts.map

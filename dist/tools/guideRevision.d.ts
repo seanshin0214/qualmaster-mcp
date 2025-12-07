@@ -17,6 +17,23 @@ export declare const guideRevisionSchema: {
     readonly required: readonly ["reviewer_comment"];
 };
 export declare function guideRevision(args: Record<string, unknown>): Promise<{
+    error: boolean;
+    message: string;
+    required_parameters: {
+        reviewer_comment: string;
+    };
+    example: {
+        reviewer_comment: string;
+        rejection_pattern: string;
+    };
+    reviewer_comment_analysis?: undefined;
+    recommended_strategies?: undefined;
+    response_letter_template?: undefined;
+    pattern_specific_advice?: undefined;
+    revision_checklist?: undefined;
+    dos_and_donts?: undefined;
+    example_responses?: undefined;
+} | {
     reviewer_comment_analysis: {
         comment_type: "concern" | "critique" | "suggestion" | "question" | "praise";
         type_korean: string;
@@ -35,5 +52,9 @@ export declare function guideRevision(args: Record<string, unknown>): Promise<{
     revision_checklist: string[];
     dos_and_donts: Record<string, string[]>;
     example_responses: string[];
+    error?: undefined;
+    message?: undefined;
+    required_parameters?: undefined;
+    example?: undefined;
 }>;
 //# sourceMappingURL=guideRevision.d.ts.map

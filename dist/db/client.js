@@ -1,4 +1,4 @@
-import { DefaultEmbeddingFunction } from "chromadb";
+import { ChromaClient, DefaultEmbeddingFunction } from "chromadb";
 import { COLLECTIONS } from "./collections.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -7,39 +7,44 @@ const __dirname = path.dirname(__filename);
 let chromaClient = null;
 let embeddingFunction = null;
 let isChromaAvailable = false;
+// 프로젝트 루트의 chroma-data 폴더 경로
+const CHROMA_DATA_PATH = path.resolve(__dirname, "../../chroma-data");
 export async function initializeDatabase() {
-    // 내장 모드: 로컬 파일 경로 사용 (HTTP 서버 불필요)
-    const chromaDataPath = process.env.CHROMA_DATA_PATH ||
-        path.resolve(__dirname, "../../chroma-data");
-    try {
-        embeddingFunction = new DefaultEmbeddingFunction();
-        // PersistentClient 모드 - 별도 서버 없이 내장 실행
-        const { ChromaClient: PersistentChromaClient } = await import("chromadb");
-        // ChromaDB 1.x에서는 path 옵션으로 내장 모드 사용
-        chromaClient = new PersistentChromaClient({
-            path: chromaDataPath,
-        });
-        // Ensure all collections exist
-        for (const collectionConfig of Object.values(COLLECTIONS)) {
-            try {
-                await chromaClient.getOrCreateCollection({
-                    name: collectionConfig.name,
-                    metadata: collectionConfig.metadata,
-                    embeddingFunction: embeddingFunction,
-                });
+    // ChromaDB JavaScript 클라이언트는 HTTP 서버가 필요합니다.
+    // Windows에서 서버 실행이 어려우므로, 로컬 파일 검색을 사용합니다.
+    // ChromaDB를 사용하려면 HTTP 서버를 별도로 실행해야 합니다:
+    // chroma run --path ./chroma-data --port 8000
+    const chromaUrl = process.env.CHROMA_URL;
+    if (chromaUrl) {
+        try {
+            embeddingFunction = new DefaultEmbeddingFunction();
+            chromaClient = new ChromaClient({ path: chromaUrl });
+            // Test connection
+            await chromaClient.heartbeat();
+            // Ensure all collections exist
+            for (const collectionConfig of Object.values(COLLECTIONS)) {
+                try {
+                    await chromaClient.getOrCreateCollection({
+                        name: collectionConfig.name,
+                        metadata: collectionConfig.metadata,
+                        embeddingFunction: embeddingFunction,
+                    });
+                }
+                catch (error) {
+                    // Collection creation failed, but continue
+                }
             }
-            catch (error) {
-                // Collection creation failed, but continue
-            }
+            isChromaAvailable = true;
+            console.error(`ChromaDB initialized (HTTP mode): ${chromaUrl}`);
+            return;
         }
-        isChromaAvailable = true;
-        console.error(`ChromaDB initialized (embedded mode): ${chromaDataPath}`);
+        catch (error) {
+            console.error("ChromaDB connection failed, using local file search");
+        }
     }
-    catch (error) {
-        console.error("ChromaDB initialization failed - running without vector search");
-        console.error("Error:", error instanceof Error ? error.message : error);
-        isChromaAvailable = false;
-    }
+    // ChromaDB 없이 로컬 파일 검색 사용
+    isChromaAvailable = false;
+    console.error("Using local file-based search (ChromaDB disabled)");
 }
 export function isVectorSearchAvailable() {
     return isChromaAvailable;

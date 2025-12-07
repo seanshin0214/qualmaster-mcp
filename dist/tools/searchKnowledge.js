@@ -38,6 +38,16 @@ const categoryMap = {
     all: "all",
 };
 export async function searchKnowledge(args) {
+    // Defensive coding
+    if (!args || typeof args !== 'object' || !args.query || typeof args.query !== 'string' || args.query.trim() === '') {
+        return {
+            error: true,
+            message: "search_knowledge 도구에 필수 인자 'query'가 전달되지 않았습니다.",
+            required_parameters: { query: "(필수) 검색 질의" },
+            example: { query: "질적연구 신빙성 확보 방법", category: "quality" },
+            hint: "검색하고 싶은 내용을 query 파라미터에 전달해주세요."
+        };
+    }
     const { query, category, n_results } = inputSchema.parse(args);
     const collectionCategory = categoryMap[category] || "all";
     const results = await searchKnowledgeBase(query, collectionCategory, n_results);

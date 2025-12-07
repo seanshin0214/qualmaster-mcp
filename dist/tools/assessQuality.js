@@ -42,6 +42,36 @@ function matchesKeyword(text, keywords) {
     });
 }
 export async function assessQuality(args) {
+    // Defensive coding: 인자가 없거나 undefined인 경우 친절한 에러 메시지 반환
+    if (!args || typeof args !== 'object') {
+        return {
+            error: true,
+            message: "assess_quality 도구에 필수 인자가 전달되지 않았습니다.",
+            required_parameters: {
+                research_description: "(필수) 연구 설명 - 연구 설계, 데이터 수집, 분석 방법 등을 기술하세요",
+                strategies_used: "(선택) 사용한 품질 전략 배열 - 예: ['삼각검증', '참여자확인', '동료검토']",
+                criteria: "(선택) 평가 기준 - 'lincoln_guba', 'tracy', 또는 'all' (기본값: 'all')"
+            },
+            example_usage: {
+                research_description: "IPA 방법론을 사용한 질적연구. 심층면담과 참여관찰을 통해 데이터 수집. 삼각검증과 참여자 확인 실시.",
+                strategies_used: ["삼각검증", "참여자확인", "감사추적"],
+                criteria: "all"
+            },
+            hint: "파일이나 URL의 내용을 먼저 읽어서 research_description에 전달해주세요."
+        };
+    }
+    // research_description 필수 체크
+    if (!args.research_description || typeof args.research_description !== 'string' || args.research_description.trim() === '') {
+        return {
+            error: true,
+            message: "research_description(연구 설명)은 필수 입력값입니다.",
+            required_parameters: {
+                research_description: "(필수) 연구 설명 - 연구 설계, 데이터 수집, 분석 방법 등을 기술하세요"
+            },
+            example: "IPA 방법론을 사용한 질적연구. 심층면담과 참여관찰을 통해 데이터 수집. 삼각검증과 참여자 확인 실시.",
+            hint: "파일이나 URL의 내용을 먼저 읽어서 research_description에 전달해주세요."
+        };
+    }
     const { research_description, strategies_used, criteria } = inputSchema.parse(args);
     const assessments = [];
     if (criteria === "lincoln_guba" || criteria === "all") {

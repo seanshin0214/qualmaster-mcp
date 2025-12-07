@@ -34,6 +34,16 @@ interface CodeSuggestion {
 }
 
 export async function autoCoding(args: Record<string, unknown>) {
+  // Defensive coding
+  if (!args || typeof args !== 'object' || !args.text || typeof args.text !== 'string' || args.text.trim() === '') {
+    return {
+      error: true,
+      message: "auto_coding 도구에 필수 인자 'text'가 전달되지 않았습니다.",
+      required_parameters: { text: "(필수) 코딩할 텍스트" },
+      example: { text: "면담 내용...", methodology: "grounded_theory" }
+    };
+  }
+
   const { text, methodology, existing_codes } = inputSchema.parse(args);
 
   // Analyze text segments

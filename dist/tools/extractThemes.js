@@ -26,6 +26,15 @@ const inputSchema = z.object({
     mode: z.enum(["inductive", "deductive"]).optional().default("inductive"),
 });
 export async function extractThemes(args) {
+    // Defensive coding
+    if (!args || typeof args !== 'object' || !args.codes || !Array.isArray(args.codes) || args.codes.length === 0) {
+        return {
+            error: true,
+            message: "extract_themes 도구에 필수 인자 'codes'가 전달되지 않았습니다.",
+            required_parameters: { codes: "(필수) 코드 목록 배열" },
+            example: { codes: ["불안감", "기대감", "적응"], mode: "inductive" }
+        };
+    }
     const { codes, segments, mode } = inputSchema.parse(args);
     // Cluster codes into potential themes
     const codeClusters = clusterCodes(codes);

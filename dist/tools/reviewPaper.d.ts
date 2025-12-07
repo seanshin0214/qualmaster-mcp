@@ -14,6 +14,23 @@ export declare const reviewPaperSchema: {
     readonly required: readonly ["paper_text"];
 };
 export declare function reviewPaper(args: Record<string, unknown>): Promise<{
+    error: boolean;
+    message: string;
+    required_parameters: {
+        paper_text: string;
+    };
+    example: {
+        paper_text: string;
+        section: string;
+    };
+    section_reviewed?: undefined;
+    paper_length?: undefined;
+    overall_score?: undefined;
+    section_scores?: undefined;
+    top_improvement_areas?: undefined;
+    amr_checklist?: undefined;
+    revision_priorities?: undefined;
+} | {
     section_reviewed: "introduction" | "discussion" | "literature" | "theory" | "full";
     paper_length: number;
     overall_score: {
@@ -42,5 +59,9 @@ export declare function reviewPaper(args: Record<string, unknown>): Promise<{
     }[];
     amr_checklist: Record<string, string>;
     revision_priorities: string[];
+    error?: undefined;
+    message?: undefined;
+    required_parameters?: undefined;
+    example?: undefined;
 }>;
 //# sourceMappingURL=reviewPaper.d.ts.map

@@ -24,6 +24,22 @@ export declare const extractThemesSchema: {
     readonly required: readonly ["codes"];
 };
 export declare function extractThemes(args: Record<string, unknown>): Promise<{
+    error: boolean;
+    message: string;
+    required_parameters: {
+        codes: string;
+    };
+    example: {
+        codes: string[];
+        mode: string;
+    };
+    mode?: undefined;
+    input_summary?: undefined;
+    thematic_analysis?: undefined;
+    thematic_map?: undefined;
+    quality_check?: undefined;
+    braun_clarke_checklist?: undefined;
+} | {
     mode: "inductive" | "deductive";
     input_summary: {
         total_codes: number;
@@ -53,5 +69,9 @@ export declare function extractThemes(args: Record<string, unknown>): Promise<{
         recommendations: string[];
     };
     braun_clarke_checklist: Record<string, string | boolean>;
+    error?: undefined;
+    message?: undefined;
+    required_parameters?: undefined;
+    example?: undefined;
 }>;
 //# sourceMappingURL=extractThemes.d.ts.map

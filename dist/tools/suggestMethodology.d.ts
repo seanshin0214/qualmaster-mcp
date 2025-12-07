@@ -22,6 +22,22 @@ export declare const suggestMethodologySchema: {
     readonly required: readonly ["research_question"];
 };
 export declare function suggestMethodology(args: Record<string, unknown>): Promise<{
+    error: boolean;
+    message: string;
+    required_parameters: {
+        research_question: string;
+    };
+    example: {
+        research_question: string;
+        purpose: string;
+    };
+    research_question?: undefined;
+    purpose?: undefined;
+    question_analysis?: undefined;
+    recommendations?: undefined;
+    top_recommendation?: undefined;
+    alternative_considerations?: undefined;
+} | {
     research_question: string;
     purpose: string;
     question_analysis: QuestionAnalysis;
@@ -39,6 +55,10 @@ export declare function suggestMethodology(args: Record<string, unknown>): Promi
         next_steps: string[];
     };
     alternative_considerations: string[];
+    error?: undefined;
+    message?: undefined;
+    required_parameters?: undefined;
+    example?: undefined;
 }>;
 interface QuestionAnalysis {
     keywords: string[];

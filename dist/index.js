@@ -3,6 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { ListResourcesRequestSchema, ReadResourceRequestSchema, } from "@modelcontextprotocol/sdk/types.js";
 import { registerTools } from "./tools/index.js";
 import { initializeDatabase } from "./db/client.js";
+import { loadKnowledgeBase, getKnowledgeStats } from "./db/localSearch.js";
 import { readFileSync, readdirSync, existsSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -11,8 +12,12 @@ dotenv.config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SKILLS_DIR = path.join(__dirname, "../skills");
 async function main() {
-    // Initialize ChromaDB
+    // Initialize ChromaDB (optional - might fail)
     await initializeDatabase();
+    // Load local knowledge base (fallback)
+    await loadKnowledgeBase();
+    const stats = getKnowledgeStats();
+    console.error(`[LocalSearch] Knowledge base ready: ${stats.total} documents`);
     // Create MCP Server
     const server = new Server({
         name: "qualmaster-mcp-server",

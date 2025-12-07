@@ -9,12 +9,13 @@
 
 import { ChromaClient } from "chromadb";
 import { readdir, readFile } from "fs/promises";
-import { join, basename, dirname } from "path";
+import { join, basename } from "path";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const CHROMA_PATH = process.env.CHROMA_PATH || "./chroma-data";
+// ChromaDB HTTP 서버 모드 - 환경변수 또는 기본값 사용
+const CHROMA_URL = process.env.CHROMA_URL || "http://localhost:8000";
 const KNOWLEDGE_PATH = "./src/knowledge";
 
 interface DocumentChunk {
@@ -141,9 +142,9 @@ function getCategoriesFromPath(filePath: string): { category: string; subcategor
 async function seedDatabase() {
   console.log("🚀 Starting Dr. QualMaster Knowledge Base Seeding...\n");
 
-  // Initialize ChromaDB client
-  const client = new ChromaClient({ path: CHROMA_PATH });
-  console.log(`📁 ChromaDB path: ${CHROMA_PATH}`);
+  // Initialize ChromaDB client (HTTP 모드)
+  const client = new ChromaClient({ path: CHROMA_URL });
+  console.log(`📁 ChromaDB URL: ${CHROMA_URL}`);
 
   // Delete existing collections
   console.log("\n🗑️  Cleaning up existing collections...");

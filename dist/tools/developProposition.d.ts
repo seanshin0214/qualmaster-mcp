@@ -20,6 +20,24 @@ export declare const developPropositionSchema: {
     readonly required: readonly ["concept"];
 };
 export declare function developProposition(args: Record<string, unknown>): Promise<{
+    error: boolean;
+    message: string;
+    required_parameters: {
+        concept: string;
+    };
+    example: {
+        concept: string;
+        relationships: string[];
+    };
+    focal_concept?: undefined;
+    related_variables?: undefined;
+    proposed_mechanism?: undefined;
+    propositions?: undefined;
+    theoretical_model?: undefined;
+    proposition_quality_checklist?: undefined;
+    writing_guidelines?: undefined;
+    next_steps?: undefined;
+} | {
     focal_concept: string;
     related_variables: string[];
     proposed_mechanism: string;
@@ -44,5 +62,9 @@ export declare function developProposition(args: Record<string, unknown>): Promi
         examples: string[];
     };
     next_steps: string[];
+    error?: undefined;
+    message?: undefined;
+    required_parameters?: undefined;
+    example?: undefined;
 }>;
 //# sourceMappingURL=developProposition.d.ts.map
